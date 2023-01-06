@@ -1,0 +1,1155 @@
+# (Pair owner None False { } { } 31556952 { Elt "" 0x })
+{
+  storage (pair (address %owner) (option %owner_candidate address) (bool %paused) (set %consumer address) (big_map %permits address (pair (nat %counter) (option %user_expiry nat) (map %user_permits bytes (pair (option %expiry nat) (timestamp %created_at))))) (nat %default_expiry) (big_map %metadata string bytes));
+  parameter (or (or (or (address %declare_ownership) (unit %claim_ownership)) (or (unit %pause) (unit %unpause))) (or (or (or (pair %set_metadata (string %k) (option %d bytes)) (or %manage_consumer (address %add) (address %remove))) (or (pair %set_expiry (option %iv nat) (option %ip bytes)) (pair %setExpiry (address %u) (pair (nat %sec) (option %data bytes))))) (or (or (nat %set_default_expiry) (pair %permit (key %signer) (pair (signature %sig) (bytes %permit_key)))) (or (pair %consume (address %user) (pair (bytes %permit_key) (string %err))) (pair %check (key %signer) (pair (signature %sig) (bytes %data)))))));
+  code { LAMBDA
+           bool
+           bool
+           { PUSH unit Unit;
+             DUP 2;
+             IF
+               { PUSH string "CONTRACT_PAUSED";
+                 FAILWITH }
+               {  };
+             PUSH bool True;
+             SWAP;
+             DROP;
+             DUG 1;
+             DROP };
+         LAMBDA
+           (pair nat (big_map address (pair (nat %counter) (option %user_expiry nat) (map %user_permits bytes (pair (option %expiry nat) (timestamp %created_at))))) address)
+           nat
+           { UNPAIR 3;
+             PUSH unit Unit;
+             DUP 3;
+             DUP 5;
+             GET;
+             IF_NONE
+               { DUP 2 }
+               { DUP;
+                 CDR;
+                 CAR;
+                 IF_NONE
+                   { DUP 3 }
+                   {  };
+                 SWAP;
+                 DROP };
+             SWAP;
+             DROP;
+             DUG 3;
+             DROP 3 };
+         LAMBDA
+           (pair nat (big_map address (pair (nat %counter) (option %user_expiry nat) (map %user_permits bytes (pair (option %expiry nat) (timestamp %created_at))))) address bytes)
+           nat
+           { UNPAIR 4;
+             PUSH unit Unit;
+             DUP 3;
+             DUP 5;
+             GET;
+             IF_NONE
+               { DUP 2 }
+               { DUP;
+                 CDR;
+                 CAR;
+                 IF_NONE
+                   { DUP 3 }
+                   {  };
+                 DUP 2;
+                 CDR;
+                 CDR;
+                 DUP 8;
+                 GET;
+                 IF_NONE
+                   { DUP }
+                   { DUP;
+                     CAR;
+                     IF_NONE
+                       { DUP 5 }
+                       {  };
+                     SWAP;
+                     DROP };
+                 DIP { DROP };
+                 SWAP;
+                 DROP };
+             SWAP;
+             DROP;
+             DUG 4;
+             DROP 4 };
+         LAMBDA
+           (pair (pair (option %expiry nat) (timestamp %created_at)) nat)
+           bool
+           { UNPAIR 2;
+             PUSH unit Unit;
+             NOW;
+             PUSH int 1;
+             PUSH nat 1;
+             DUP 5;
+             CAR;
+             IF_NONE
+               { DUP 6 }
+               {  };
+             INT;
+             PAIR;
+             PAIR;
+             UNPAIR;
+             UNPAIR;
+             DIG 2;
+             MUL;
+             EDIV;
+             IF_NONE
+               { PUSH string "DIV_BY_ZERO";
+                 FAILWITH }
+               {  };
+             CAR;
+             DUP 4;
+             CDR;
+             ADD;
+             COMPARE;
+             LT;
+             SWAP;
+             DROP;
+             DUG 2;
+             DROP 2 };
+         DIG 4;
+         UNPAIR;
+         DIP { UNPAIR 7 };
+         IF_LEFT
+           { IF_LEFT
+               { IF_LEFT
+                   { DUP 2;
+                     SENDER;
+                     COMPARE;
+                     EQ;
+                     NOT;
+                     IF
+                       { PUSH string "INVALID_CALLER";
+                         FAILWITH }
+                       {  };
+                     DUP;
+                     SOME;
+                     DIP { DIG 2; DROP };
+                     DUG 2;
+                     DROP;
+                     PAIR 7;
+                     NIL operation;
+                     PAIR }
+                   { DROP;
+                     DUP 2;
+                     IF_NONE
+                       { PUSH bool False }
+                       { SENDER;
+                         DUP 2;
+                         COMPARE;
+                         EQ;
+                         SWAP;
+                         DROP };
+                     NOT;
+                     IF
+                       { PUSH string "INVALID_CALLER";
+                         FAILWITH }
+                       {  };
+                     SENDER;
+                     SWAP;
+                     DROP;
+                     NONE address;
+                     DIP { DIG 1; DROP };
+                     DUG 1;
+                     PAIR 7;
+                     NIL operation;
+                     PAIR } }
+               { IF_LEFT
+                   { DROP;
+                     DUP;
+                     SENDER;
+                     COMPARE;
+                     EQ;
+                     NOT;
+                     IF
+                       { PUSH string "INVALID_CALLER";
+                         FAILWITH }
+                       {  };
+                     DUP 11;
+                     DUP 4;
+                     EXEC;
+                     NOT;
+                     IF
+                       { PUSH string "pausable_r1";
+                         PUSH string "INVALID_CONDITION";
+                         PAIR;
+                         FAILWITH }
+                       {  };
+                     PUSH bool True;
+                     DIP { DIG 2; DROP };
+                     DUG 2;
+                     PAIR 7;
+                     NIL operation;
+                     PAIR }
+                   { DROP;
+                     DUP;
+                     SENDER;
+                     COMPARE;
+                     EQ;
+                     NOT;
+                     IF
+                       { PUSH string "INVALID_CALLER";
+                         FAILWITH }
+                       {  };
+                     DUP 3;
+                     NOT;
+                     IF
+                       { PUSH string "CONTRACT_NOT_PAUSED";
+                         FAILWITH }
+                       {  };
+                     PUSH bool False;
+                     DIP { DIG 2; DROP };
+                     DUG 2;
+                     PAIR 7;
+                     NIL operation;
+                     PAIR } } }
+           { IF_LEFT
+               { IF_LEFT
+                   { IF_LEFT
+                       { UNPAIR;
+                         SWAP;
+                         DUP 3;
+                         SENDER;
+                         COMPARE;
+                         EQ;
+                         NOT;
+                         IF
+                           { PUSH string "INVALID_CALLER";
+                             FAILWITH }
+                           {  };
+                         DUP 13;
+                         DUP 6;
+                         EXEC;
+                         NOT;
+                         IF
+                           { PUSH string "md_r1";
+                             PUSH string "INVALID_CONDITION";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP 9;
+                         DUP 2;
+                         DUP 4;
+                         UPDATE;
+                         DIP { DIG 8; DROP };
+                         DUG 8;
+                         DROP 2;
+                         PAIR 7;
+                         NIL operation;
+                         PAIR }
+                       { DUP 2;
+                         SENDER;
+                         COMPARE;
+                         EQ;
+                         NOT;
+                         IF
+                           { PUSH string "INVALID_CALLER";
+                             FAILWITH }
+                           {  };
+                         PUSH mutez 0;
+                         AMOUNT;
+                         COMPARE;
+                         EQ;
+                         NOT;
+                         IF
+                           { PUSH string "NO_TRANSFER";
+                             FAILWITH }
+                           {  };
+                         DUP;
+                         IF_LEFT
+                           { DUP 6;
+                             DUP 2;
+                             MEM;
+                             IF
+                               { PUSH string "consumer";
+                                 PUSH string "KEY_EXISTS";
+                                 PAIR;
+                                 FAILWITH }
+                               { DUP 6;
+                                 PUSH bool True;
+                                 DUP 3;
+                                 UPDATE;
+                                 DIP { DIG 5; DROP };
+                                 DUG 5 };
+                             DROP }
+                           { DUP 6;
+                             PUSH bool False;
+                             DUP 3;
+                             UPDATE;
+                             DIP { DIG 5; DROP };
+                             DUG 5;
+                             DROP };
+                         DROP;
+                         PAIR 7;
+                         NIL operation;
+                         PAIR } }
+                   { IF_LEFT
+                       { UNPAIR;
+                         SWAP;
+                         PUSH mutez 0;
+                         AMOUNT;
+                         COMPARE;
+                         EQ;
+                         NOT;
+                         IF
+                           { PUSH string "NO_TRANSFER";
+                             FAILWITH }
+                           {  };
+                         DUP 7;
+                         SENDER;
+                         GET;
+                         IF_NONE
+                           { SENDER;
+                             PUSH string "USER_PERMIT_NOT_FOUND";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP 14;
+                         DUP 7;
+                         EXEC;
+                         NOT;
+                         IF
+                           { PUSH string "r1";
+                             PUSH string "INVALID_CONDITION";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP 3;
+                         IF_NONE
+                           { PUSH bool True }
+                           { DUP 10;
+                             DUP 2;
+                             COMPARE;
+                             LT;
+                             SWAP;
+                             DROP };
+                         NOT;
+                         IF
+                           { PUSH string "EXPIRY_TOO_BIG";
+                             FAILWITH }
+                           {  };
+                         DUP 2;
+                         IF_NONE
+                           { DUP 8;
+                             DUP 9;
+                             SENDER;
+                             GET;
+                             IF_NONE
+                               { PUSH string "permits";
+                                 PUSH string "ASSET_NOT_FOUND";
+                                 PAIR;
+                                 FAILWITH }
+                               {  };
+                             UNPAIR;
+                             SWAP;
+                             UNPAIR;
+                             DROP;
+                             DUP 6;
+                             PAIR;
+                             SWAP;
+                             PAIR;
+                             SOME;
+                             SENDER;
+                             UPDATE;
+                             DIP { DIG 7; DROP };
+                             DUG 7 }
+                           { DUP 4;
+                             IF_NONE
+                               { PUSH bool True }
+                               { PUSH nat 0;
+                                 DUP 2;
+                                 COMPARE;
+                                 GT;
+                                 SWAP;
+                                 DROP };
+                             IF
+                               { DUP 2;
+                                 CDR;
+                                 CDR;
+                                 DUP 2;
+                                 GET;
+                                 IF_NONE
+                                   { DUP;
+                                     SENDER;
+                                     PAIR;
+                                     PUSH string "PERMIT_NOT_FOUND";
+                                     PAIR;
+                                     FAILWITH }
+                                   {  };
+                                 DUP 10;
+                                 DUP 11;
+                                 SENDER;
+                                 GET;
+                                 IF_NONE
+                                   { PUSH string "permits";
+                                     PUSH string "ASSET_NOT_FOUND";
+                                     PAIR;
+                                     FAILWITH }
+                                   {  };
+                                 UNPAIR;
+                                 SWAP;
+                                 UNPAIR;
+                                 SWAP;
+                                 DROP;
+                                 DUP 13;
+                                 SENDER;
+                                 GET;
+                                 IF_NONE
+                                   { PUSH string "permits";
+                                     PUSH string "ASSET_NOT_FOUND";
+                                     PAIR;
+                                     FAILWITH }
+                                   {  };
+                                 CDR;
+                                 CDR;
+                                 DUP 5;
+                                 UNPAIR;
+                                 DROP;
+                                 DUP 10;
+                                 PAIR;
+                                 SOME;
+                                 DUP 7;
+                                 UPDATE;
+                                 SWAP;
+                                 PAIR;
+                                 SWAP;
+                                 PAIR;
+                                 SOME;
+                                 SENDER;
+                                 UPDATE;
+                                 DIP { DIG 9; DROP };
+                                 DUG 9;
+                                 DROP }
+                               { DUP 9;
+                                 DUP 10;
+                                 SENDER;
+                                 GET;
+                                 IF_NONE
+                                   { PUSH string "permits";
+                                     PUSH string "ASSET_NOT_FOUND";
+                                     PAIR;
+                                     FAILWITH }
+                                   {  };
+                                 UNPAIR;
+                                 SWAP;
+                                 UNPAIR;
+                                 SWAP;
+                                 DROP;
+                                 DUP 12;
+                                 SENDER;
+                                 GET;
+                                 IF_NONE
+                                   { PUSH string "permits";
+                                     PUSH string "ASSET_NOT_FOUND";
+                                     PAIR;
+                                     FAILWITH }
+                                   {  };
+                                 CDR;
+                                 CDR;
+                                 NONE (pair (option nat) timestamp);
+                                 DUP 6;
+                                 UPDATE;
+                                 SWAP;
+                                 PAIR;
+                                 SWAP;
+                                 PAIR;
+                                 SOME;
+                                 SENDER;
+                                 UPDATE;
+                                 DIP { DIG 8; DROP };
+                                 DUG 8 };
+                             DROP };
+                         DROP 3;
+                         PAIR 7;
+                         NIL operation;
+                         PAIR }
+                       { UNPAIR;
+                         SWAP;
+                         UNPAIR;
+                         SWAP;
+                         DUP 3;
+                         SENDER;
+                         COMPARE;
+                         EQ;
+                         NOT;
+                         IF
+                           { PUSH string "INVALID_CALLER";
+                             FAILWITH }
+                           {  };
+                         PUSH mutez 0;
+                         AMOUNT;
+                         COMPARE;
+                         EQ;
+                         NOT;
+                         IF
+                           { PUSH string "NO_TRANSFER";
+                             FAILWITH }
+                           {  };
+                         DUP 8;
+                         DUP 4;
+                         GET;
+                         IF_NONE
+                           { DUP 3;
+                             PUSH string "USER_PERMIT_NOT_FOUND";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP 15;
+                         DUP 8;
+                         EXEC;
+                         NOT;
+                         IF
+                           { PUSH string "r5";
+                             PUSH string "INVALID_CONDITION";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP 2;
+                         IF_NONE
+                           { DUP 9;
+                             DUP 10;
+                             SENDER;
+                             GET;
+                             IF_NONE
+                               { PUSH string "permits";
+                                 PUSH string "ASSET_NOT_FOUND";
+                                 PAIR;
+                                 FAILWITH }
+                               {  };
+                             UNPAIR;
+                             SWAP;
+                             UNPAIR;
+                             DROP;
+                             DUP 6;
+                             SOME;
+                             PAIR;
+                             SWAP;
+                             PAIR;
+                             SOME;
+                             SENDER;
+                             UPDATE;
+                             DIP { DIG 8; DROP };
+                             DUG 8 }
+                           { PUSH nat 0;
+                             DUP 5;
+                             COMPARE;
+                             EQ;
+                             IF
+                               { PUSH bool True }
+                               { DUP 2;
+                                 CDR;
+                                 CDR;
+                                 DUP 2;
+                                 GET;
+                                 IF_NONE
+                                   { PUSH bool False }
+                                   { DUP 5;
+                                     INT;
+                                     DUP 2;
+                                     CDR;
+                                     NOW;
+                                     SUB;
+                                     COMPARE;
+                                     GE;
+                                     SWAP;
+                                     DROP };
+                                 IF
+                                   { PUSH bool True }
+                                   { PUSH bool False } };
+                             IF
+                               { DUP 10;
+                                 DUP 11;
+                                 DUP 7;
+                                 GET;
+                                 IF_NONE
+                                   { PUSH string "permits";
+                                     PUSH string "ASSET_NOT_FOUND";
+                                     PAIR;
+                                     FAILWITH }
+                                   {  };
+                                 UNPAIR;
+                                 SWAP;
+                                 UNPAIR;
+                                 SWAP;
+                                 DROP;
+                                 DUP 13;
+                                 DUP 9;
+                                 GET;
+                                 IF_NONE
+                                   { PUSH string "permits";
+                                     PUSH string "ASSET_NOT_FOUND";
+                                     PAIR;
+                                     FAILWITH }
+                                   {  };
+                                 CDR;
+                                 CDR;
+                                 NONE (pair (option nat) timestamp);
+                                 DUP 6;
+                                 UPDATE;
+                                 SWAP;
+                                 PAIR;
+                                 SWAP;
+                                 PAIR;
+                                 SOME;
+                                 DUP 7;
+                                 UPDATE;
+                                 DIP { DIG 9; DROP };
+                                 DUG 9 }
+                               { DUP 2;
+                                 CDR;
+                                 CDR;
+                                 DUP 2;
+                                 GET;
+                                 IF_NONE
+                                   { DUP;
+                                     SENDER;
+                                     PAIR;
+                                     PUSH string "PERMIT_NOT_FOUND";
+                                     PAIR;
+                                     FAILWITH }
+                                   {  };
+                                 DUP 11;
+                                 DUP 12;
+                                 DUP 8;
+                                 GET;
+                                 IF_NONE
+                                   { PUSH string "permits";
+                                     PUSH string "ASSET_NOT_FOUND";
+                                     PAIR;
+                                     FAILWITH }
+                                   {  };
+                                 UNPAIR;
+                                 SWAP;
+                                 UNPAIR;
+                                 SWAP;
+                                 DROP;
+                                 DUP 14;
+                                 DUP 10;
+                                 GET;
+                                 IF_NONE
+                                   { PUSH string "permits";
+                                     PUSH string "ASSET_NOT_FOUND";
+                                     PAIR;
+                                     FAILWITH }
+                                   {  };
+                                 CDR;
+                                 CDR;
+                                 DUP 5;
+                                 UNPAIR;
+                                 DROP;
+                                 DUP 10;
+                                 SOME;
+                                 PAIR;
+                                 SOME;
+                                 DUP 7;
+                                 UPDATE;
+                                 SWAP;
+                                 PAIR;
+                                 SWAP;
+                                 PAIR;
+                                 SOME;
+                                 DUP 8;
+                                 UPDATE;
+                                 DIP { DIG 10; DROP };
+                                 DUG 10;
+                                 DROP };
+                             DROP };
+                         DROP 4;
+                         PAIR 7;
+                         NIL operation;
+                         PAIR } } }
+               { IF_LEFT
+                   { IF_LEFT
+                       { DUP 2;
+                         SENDER;
+                         COMPARE;
+                         EQ;
+                         NOT;
+                         IF
+                           { PUSH string "INVALID_CALLER";
+                             FAILWITH }
+                           {  };
+                         DUP 12;
+                         DUP 5;
+                         EXEC;
+                         NOT;
+                         IF
+                           { PUSH string "r3";
+                             PUSH string "INVALID_CONDITION";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP;
+                         DIP { DIG 6; DROP };
+                         DUG 6;
+                         DROP;
+                         PAIR 7;
+                         NIL operation;
+                         PAIR }
+                       { UNPAIR;
+                         SWAP;
+                         UNPAIR;
+                         SWAP;
+                         PUSH mutez 0;
+                         AMOUNT;
+                         COMPARE;
+                         EQ;
+                         NOT;
+                         IF
+                           { PUSH string "NO_TRANSFER";
+                             FAILWITH }
+                           {  };
+                         DUP 3;
+                         HASH_KEY;
+                         IMPLICIT_ACCOUNT;
+                         ADDRESS;
+                         DUP 9;
+                         DUP 2;
+                         GET;
+                         IF_NONE
+                           { EMPTY_MAP bytes (pair (option %expiry nat) (timestamp %created_at));
+                             PUSH nat 0;
+                             PAIR }
+                           { DUP;
+                             CDR;
+                             CDR;
+                             DUP 2;
+                             CAR;
+                             PAIR;
+                             SWAP;
+                             DROP };
+                         DUP;
+                         CAR;
+                         DUP 2;
+                         CDR;
+                         DUP 5;
+                         DUP 3;
+                         PAIR;
+                         CHAIN_ID;
+                         SELF_ADDRESS;
+                         PAIR;
+                         PAIR;
+                         PACK;
+                         DUP 18;
+                         DUP 6;
+                         DUP 15;
+                         PAIR;
+                         DUP 16;
+                         PAIR;
+                         EXEC;
+                         DUP 20;
+                         DUP 13;
+                         EXEC;
+                         NOT;
+                         IF
+                           { PUSH string "p4";
+                             PUSH string "INVALID_CONDITION";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP 2;
+                         DUP 9;
+                         DUP 11;
+                         CHECK_SIGNATURE;
+                         NOT;
+                         IF
+                           { DUP 2;
+                             PUSH string "MISSIGNED";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP 3;
+                         DUP 8;
+                         MEM;
+                         IF
+                           { DUP 7;
+                             PUSH string "DUP_PERMIT";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         PUSH nat 20000;
+                         DUP 4;
+                         SIZE;
+                         COMPARE;
+                         LT;
+                         NOT;
+                         IF
+                           { PUSH string "MAX_PERMITS_REACHED";
+                             FAILWITH }
+                           {  };
+                         DUP 14;
+                         DUP 7;
+                         MEM;
+                         IF
+                           { DUP 14;
+                             DUP 7;
+                             GET;
+                             IF_NONE
+                               { PUSH string "permits";
+                                 PUSH string "ASSET_NOT_FOUND";
+                                 PAIR;
+                                 FAILWITH }
+                               {  };
+                             DUP 15;
+                             DUP 16;
+                             DUP 9;
+                             GET;
+                             IF_NONE
+                               { PUSH string "permits";
+                                 PUSH string "ASSET_NOT_FOUND";
+                                 PAIR;
+                                 FAILWITH }
+                               {  };
+                             UNPAIR;
+                             DROP;
+                             PUSH nat 1;
+                             DUP 4;
+                             CAR;
+                             ADD;
+                             SWAP;
+                             UNPAIR;
+                             SWAP;
+                             DROP;
+                             DUP 7;
+                             NOW;
+                             DUP 7;
+                             SOME;
+                             PAIR;
+                             SOME;
+                             DUP 13;
+                             UPDATE;
+                             SWAP;
+                             PAIR;
+                             SWAP;
+                             PAIR;
+                             SOME;
+                             DUP 9;
+                             UPDATE;
+                             DIP { DIG 14; DROP };
+                             DUG 14;
+                             DROP }
+                           { DUP 14;
+                             DUP 4;
+                             NOW;
+                             DUP 4;
+                             SOME;
+                             PAIR;
+                             SOME;
+                             DUP 10;
+                             UPDATE;
+                             NONE nat;
+                             PAIR;
+                             PUSH nat 1;
+                             PUSH nat 0;
+                             ADD;
+                             PAIR;
+                             SOME;
+                             DUP 8;
+                             UPDATE;
+                             DIP { DIG 13; DROP };
+                             DUG 13 };
+                         DUP 14;
+                         DUP 7;
+                         GET;
+                         IF_NONE
+                           { PUSH string "permits";
+                             PUSH string "ASSET_NOT_FOUND";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         CDR;
+                         CDR;
+                         ITER { UNPAIR;
+                                DUP 19;
+                                DUP 4;
+                                DUP 4;
+                                PAIR;
+                                EXEC;
+                                IF
+                                  { DUP 16;
+                                    DUP 17;
+                                    DUP 10;
+                                    GET;
+                                    IF_NONE
+                                      { PUSH string "permits";
+                                        PUSH string "ASSET_NOT_FOUND";
+                                        PAIR;
+                                        FAILWITH }
+                                      {  };
+                                    UNPAIR;
+                                    SWAP;
+                                    UNPAIR;
+                                    SWAP;
+                                    DROP;
+                                    DUP 19;
+                                    DUP 12;
+                                    GET;
+                                    IF_NONE
+                                      { PUSH string "permits";
+                                        PUSH string "ASSET_NOT_FOUND";
+                                        PAIR;
+                                        FAILWITH }
+                                      {  };
+                                    CDR;
+                                    CDR;
+                                    NONE (pair (option nat) timestamp);
+                                    DUP 6;
+                                    UPDATE;
+                                    SWAP;
+                                    PAIR;
+                                    SWAP;
+                                    PAIR;
+                                    SOME;
+                                    DUP 10;
+                                    UPDATE;
+                                    DIP { DIG 15; DROP };
+                                    DUG 15 }
+                                  {  };
+                                DROP 2 };
+                         DROP 9;
+                         PAIR 7;
+                         NIL operation;
+                         PAIR } }
+                   { IF_LEFT
+                       { UNPAIR;
+                         SWAP;
+                         UNPAIR;
+                         SWAP;
+                         DUP 7;
+                         SENDER;
+                         MEM;
+                         NOT;
+                         IF
+                           { PUSH string "INVALID_CALLER";
+                             FAILWITH }
+                           {  };
+                         PUSH mutez 0;
+                         AMOUNT;
+                         COMPARE;
+                         EQ;
+                         NOT;
+                         IF
+                           { PUSH string "NO_TRANSFER";
+                             FAILWITH }
+                           {  };
+                         DUP 12;
+                         DUP 3;
+                         DUP 5;
+                         PAIR;
+                         DUP 10;
+                         PAIR;
+                         DUP 11;
+                         PAIR;
+                         EXEC;
+                         DUP 9;
+                         DUP 5;
+                         GET;
+                         IF_NONE
+                           { DUP 2;
+                             FAILWITH }
+                           {  };
+                         DUP;
+                         CDR;
+                         CDR;
+                         DUP 5;
+                         GET;
+                         IF_NONE
+                           { DUP 3;
+                             FAILWITH }
+                           {  };
+                         DUP 17;
+                         DUP 10;
+                         EXEC;
+                         NOT;
+                         IF
+                           { PUSH string "p8";
+                             PUSH string "INVALID_CONDITION";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP 14;
+                         DUP 4;
+                         DUP 3;
+                         PAIR;
+                         EXEC;
+                         IF
+                           { PUSH int 1;
+                             PUSH nat 1;
+                             DUP 3;
+                             CAR;
+                             IF_NONE
+                               { DUP 5 }
+                               {  };
+                             INT;
+                             PAIR;
+                             PAIR;
+                             UNPAIR;
+                             UNPAIR;
+                             DIG 2;
+                             MUL;
+                             EDIV;
+                             IF_NONE
+                               { PUSH string "DIV_BY_ZERO";
+                                 FAILWITH }
+                               {  };
+                             CAR;
+                             DUP 2;
+                             CDR;
+                             ADD;
+                             PUSH string "PERMIT_EXPIRED";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP 11;
+                         DUP 12;
+                         DUP 8;
+                         GET;
+                         IF_NONE
+                           { PUSH string "permits";
+                             PUSH string "ASSET_NOT_FOUND";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         UNPAIR;
+                         SWAP;
+                         UNPAIR;
+                         SWAP;
+                         DROP;
+                         DUP 14;
+                         DUP 10;
+                         GET;
+                         IF_NONE
+                           { PUSH string "permits";
+                             PUSH string "ASSET_NOT_FOUND";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         CDR;
+                         CDR;
+                         NONE (pair (option nat) timestamp);
+                         DUP 10;
+                         UPDATE;
+                         SWAP;
+                         PAIR;
+                         SWAP;
+                         PAIR;
+                         SOME;
+                         DUP 8;
+                         UPDATE;
+                         DIP { DIG 10; DROP };
+                         DUG 10;
+                         DROP 6;
+                         PAIR 7;
+                         NIL operation;
+                         PAIR }
+                       { UNPAIR;
+                         SWAP;
+                         UNPAIR;
+                         SWAP;
+                         DUP 7;
+                         SENDER;
+                         MEM;
+                         NOT;
+                         IF
+                           { PUSH string "INVALID_CALLER";
+                             FAILWITH }
+                           {  };
+                         PUSH mutez 0;
+                         AMOUNT;
+                         COMPARE;
+                         EQ;
+                         NOT;
+                         IF
+                           { PUSH string "NO_TRANSFER";
+                             FAILWITH }
+                           {  };
+                         DUP 3;
+                         HASH_KEY;
+                         IMPLICIT_ACCOUNT;
+                         ADDRESS;
+                         DUP 9;
+                         DUP 2;
+                         GET;
+                         IF_NONE
+                           { PUSH nat 0 }
+                           { DUP;
+                             CAR;
+                             SWAP;
+                             DROP };
+                         DUP 3;
+                         DUP 2;
+                         PAIR;
+                         CHAIN_ID;
+                         SELF_ADDRESS;
+                         PAIR;
+                         PAIR;
+                         PACK;
+                         DUP 17;
+                         DUP 10;
+                         EXEC;
+                         NOT;
+                         IF
+                           { PUSH string "p10";
+                             PUSH string "INVALID_CONDITION";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP;
+                         DUP 6;
+                         DUP 8;
+                         CHECK_SIGNATURE;
+                         NOT;
+                         IF
+                           { DUP;
+                             PUSH string "MISSIGNED";
+                             PAIR;
+                             FAILWITH }
+                           {  };
+                         DUP 11;
+                         DUP 4;
+                         MEM;
+                         IF
+                           { DUP 11;
+                             DUP 12;
+                             DUP 5;
+                             GET;
+                             IF_NONE
+                               { PUSH string "permits";
+                                 PUSH string "ASSET_NOT_FOUND";
+                                 PAIR;
+                                 FAILWITH }
+                               {  };
+                             UNPAIR;
+                             DROP;
+                             PUSH nat 1;
+                             DUP 5;
+                             ADD;
+                             PAIR;
+                             SOME;
+                             DUP 5;
+                             UPDATE;
+                             DIP { DIG 10; DROP };
+                             DUG 10 }
+                           { DUP 11;
+                             EMPTY_MAP bytes (pair (option %expiry nat) (timestamp %created_at));
+                             NONE nat;
+                             PAIR;
+                             PUSH nat 1;
+                             DUP 5;
+                             ADD;
+                             PAIR;
+                             SOME;
+                             DUP 5;
+                             UPDATE;
+                             DIP { DIG 10; DROP };
+                             DUG 10 };
+                         DROP 6;
+                         PAIR 7;
+                         NIL operation;
+                         PAIR } } } };
+         DIP { DROP 4 } };
+}
+
